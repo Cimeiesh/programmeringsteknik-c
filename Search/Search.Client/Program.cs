@@ -16,6 +16,7 @@ namespace Search.Client
         {
             Parser.Default.ParseArguments<SearchOptions, IndexOptions>(args)
                           .MapResult<SearchOptions, IndexOptions, object>(Search, Index, Error);
+
         }
 
         static object Search(SearchOptions options)
@@ -33,12 +34,16 @@ namespace Search.Client
             // 3. Räkna alla recept som är upplagda av Per Morberg.
             // 4. Hitta 30 recept som tillhör kategorin Bönor.
             // 5. Räkna alla recept som har en tillagningstid på under 10 minuter (tips: TimeSpan lagras som ticks i index).
+            var searchResponse = client.Search(s => s.QueryOnQueryString(options.Query)
+                    .Sort (o => o.Descending(d=> d.Rating))
+                    .Take(20));
 
             return 0;
         }
 
         static object Index(IndexOptions options)
         {
+
             RecipeDocument recipe;
 
             try
